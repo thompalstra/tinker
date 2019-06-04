@@ -5,7 +5,7 @@ use Frame;
 
 class BuildController extends \Hub\Base\Controller
 {
-    public function model(string $name, int $usedb = 0)
+    public function model(string $name, int $usedb = 1)
     {
         $fp = $namespace =  ['App'];
         $class = $name;

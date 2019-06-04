@@ -9,7 +9,7 @@ use Frame;
 use Hub\Base\Request;
 use Hub\Base\Base;
 use Hub\Base\Controller;
-use Hub\Base\View;
+use View;
 
 class Application extends Base
 {

@@ -1,8 +1,10 @@
 <?php
 
-class Frame extends \Hub\Base\Base
+class Frame
 {
     public static $app;
+
+    protected static $classmap = [];
 
     public static function path(array $params = [])
     {
@@ -23,5 +25,17 @@ class Frame extends \Hub\Base\Base
     public static function root()
     {
         return self::$app->root;
+    }
+
+    public static function autoload($class)
+    {
+        if (empty(self::$classmap)) {
+            self::$classmap = include("classmap.php");
+        }
+
+        if (isset(self::$classmap[$class])) {
+            return require_once(self::$classmap[$class]);
+        }
+        return false;
     }
 }

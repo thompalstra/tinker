@@ -1,7 +1,7 @@
 <?php
-namespace Hub\Base;
+// namespace Hub\Http;
 
-use Frame;
+use Hub\Base\Base;
 
 class View extends Base
 {

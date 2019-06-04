@@ -12,3 +12,5 @@ Route::get("queue/start", "QueueController@start");
 Route::get("queue/restart", "QueueController@restart");
 Route::get("migrate", "MigrationController@migrate");
 Route::get("migrate/rollback", "MigrationController@rollback");
+
+Route::get("optimize/classmap", "OptimizeController@classmap");

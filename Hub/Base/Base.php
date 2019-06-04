@@ -1,6 +1,8 @@
 <?php
 namespace Hub\Base;
 
+use Exception;
+
 class Base
 {
     public function __get($key)
@@ -30,15 +32,19 @@ class Base
             }
         } else if(method_exists($this, $method)){
             call_user_func_array([$this, $method], $arg);
+        } else {
+            $class = self::class;
+            throw new Exception("Undefined method {$class}->{$method}");
         }
     }
 
     public static function __callStatic($method, $arg)
     {
-        if(method_exists(self::class, $method)){
-            call_user_func_array([self::class, $method], $arg);
+        $class = self::class;
+        if(method_exists($class, $method)){
+            call_user_func_array([$class, $method], $arg);
         } else {
-            echo "not implemented __callStatic"; exit;
+            throw new Exception("Undefined method {$class}:{$method}", 500);
         }
     }
 }

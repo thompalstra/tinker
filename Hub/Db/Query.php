@@ -1,11 +1,13 @@
 <?php
 namespace Hub\Db;
 
-use Hub\Base\Base;
-
 use PDO;
+use Exception;
 
 use Frame;
+
+use Hub\Base\Base;
+
 
 class Query extends Base
 {
@@ -197,7 +199,6 @@ class Query extends Base
             $sth->setFetchMode($this->getFetchMode(), $this->getClassName(), [[], false]);
         }
         $sth->execute();
-
         return new Collection($sth);
     }
 
@@ -225,12 +226,33 @@ class Query extends Base
     public function execute($command, $fetchMode = null, $fetchMethod = null)
     {
         $sth = Frame::$app->db->prepare($command);
+        $class = $this->getClassName();
+        $result = null;
 
         if($fetchMode){
             $sth->setFetchMode($fetchMode, $this->getClassName(), [[], false]);
         }
+        try {
+            $result = $sth->execute();
+        } catch (Exception $e) {
+            switch($e->getCode()) {
+                case "42S02":
+                    if ($class) {
+                        if (method_exists($class, 'getTable') && property_exists($class, 'columns')) {
+                            if (self::createTable($class::getTable(), $class::$columns)) {
+                                $result = $sth->execute();
+                                if (method_exists($class, 'seed')) {
+                                    $seed = $class::seed();
+                                    self::insert($class, $seed[0], $seed[1]);
+                                }
+                            } else {
+                            }
+                        }
+                    }
+                break;
+            }
+        }
 
-        $result = $sth->execute();
         $this->result = $result;
 
         if($fetchMethod){
