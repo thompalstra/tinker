@@ -9,9 +9,10 @@ use Frame;
 use Hub\Base\Base;
 
 
-class Query extends Base
+class Query // extends Base
 {
     protected $result = false;
+    protected $className = null;
 
     public function __construct($class = null)
     {
@@ -19,6 +20,26 @@ class Query extends Base
             $this->setClassName($class);
             $this->setFetchMode(PDO::FETCH_CLASS);
         }
+    }
+
+    public function getFetchMode()
+    {
+        return $this->fetchMode;
+    }
+
+    public function setFetchMode($fetchMode)
+    {
+        $this->fetchMode = $fetchMode;
+    }
+
+    public function getClassName()
+    {
+        return $this->className;
+    }
+
+    public function setClassName($className)
+    {
+        $this->className = $className;
     }
 
     protected $parts = [

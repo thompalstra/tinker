@@ -6,5 +6,5 @@ use DirectoryIterator;
 
 class OptimizeController extends \Hub\Base\Controller
 {
-    
+
 }

@@ -25,7 +25,6 @@ class Request extends \Hub\Base\Request
         $method = strtolower($method);
 
         $this->setMethod($method);
-        $this->addParameter("test", "best");
     }
 
     public function getRoutes()
@@ -45,6 +44,6 @@ class Request extends \Hub\Base\Request
 
     public function getLayoutPath()
     {
-        return Frame::path(["layouts"]);
+        return Frame::path([]);
     }
 }

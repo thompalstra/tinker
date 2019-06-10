@@ -1,5 +1,7 @@
 <?php
-// namespace Hub\Http;
+namespace Hub\Http;
+
+use Frame;
 
 use Hub\Base\Base;
 
@@ -36,7 +38,7 @@ class View extends Base
 
     public static function make($name, $data = [])
     {
-        $name = "storage/views/{$name}";
+        $name = "storage/{$name}";
         foreach(self::getEngines() as $renderer => $extensions){
             foreach($extensions as $extension){
                 if(file_exists("{$name}.{$extension}")){

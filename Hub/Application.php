@@ -9,15 +9,16 @@ use Frame;
 use Hub\Base\Request;
 use Hub\Base\Base;
 use Hub\Base\Controller;
-use View;
+use Hub\Http\View;
 
 class Application extends Base
 {
+
+    protected $input;
+
     public $root;
     public $routes = [
-        "get" => [],
-        "post" => [],
-        "put" => []
+        "names" => []
     ];
     public $db;
     public $queues = [];
@@ -43,7 +44,6 @@ class Application extends Base
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->controller = new Controller();
 
-
         View::registerEngine("Hub\Blade\Renderer@output", ["blade", "blade.php"]);
         View::registerEngine("Hub\Twig\Renderer@output", ["twig", "twig.php"]);
         View::registerEngine("Hub\Http\Renderer@output", ["html", "php"]);
@@ -67,6 +67,7 @@ class Application extends Base
     public function process($request)
     {
         $this->request = $request;
+        $this->input = new \Hub\Base\Input();
 
         $config = $this->request->getRoutes();
 
@@ -84,13 +85,14 @@ class Application extends Base
             $controller = $matches[1];
             $method = $matches[2];
 
-            $ns = Frame::ns([$this->request->getControllerPath(), $controller]);
+            // $ns = Frame::ns([$this->request->getControllerPath(), $controller]);
+            $controller = Frame::$app->controller->resolve($controller);
 
-            if(class_exists("{$ns}")){
-                Frame::$app->controller = new $ns();
+            if(class_exists($controller)){
+                Frame::$app->controller = new $controller();
                 Frame::$app->controller->run($method, $route[1]);
             } else {
-                return Frame::$app->controller->run("error", ['message' => "{$ns} does not exist."]);
+                return Frame::$app->controller->run("error", ['message' => "{$controller} does not exist."]);
             }
         } else {
             return Frame::$app->controller->run("error", ['message' => "Route '{$route[0]}' does not exist."]);

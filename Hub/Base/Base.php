@@ -5,6 +5,20 @@ use Exception;
 
 class Base
 {
+
+    public function load($data = [])
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+        return true;
+    }
+
+    public static function getClassName()
+    {
+        return get_called_class();
+    }
+
     public function __get($key)
     {
         return $this->$key;

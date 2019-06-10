@@ -7,10 +7,33 @@ class Request extends Base implements RequestInterface
 {
     protected $path = "";
     protected $parameters = [];
+    protected static $fields;
 
     public function __construct(array $options = [])
     {
         $this->process($options);
+
+        $this->setHost($_SERVER["HTTP_HOST"]);
+    }
+
+    public function getContentType()
+    {
+        return isset($_SERVER["CONTENT_TYPE"]) ? $_SERVER["CONTENT_TYPE"] : null;
+    }
+
+    public static function get(string $field)
+    {
+        return Frame::$app->input->get($field);
+    }
+
+    public static function has(string $field)
+    {
+        return Frame::$app->input->has($field);
+    }
+
+    public static function all()
+    {
+        return Frame::$app->input->all();
     }
 
     public function process(array $options = [])
@@ -26,12 +49,24 @@ class Request extends Base implements RequestInterface
 
     public function getRoute()
     {
-        foreach(Frame::$app->routes[$this->getMethod()] as $path => $controller){
-            if($this->matchRoute($this->getPath(), $path)){
-                return [Frame::path([$controller]), $this->getParameters()];
+        // var_dump($_SERVER); die;
+        foreach (Frame::$app->routes as $host => $routes) {
+            if ($host == "names") { continue; }
+            if ($this->matchHost($host)) {
+                foreach ($routes[$this->getMethod()] as $path => $controller) {
+                    if($this->matchRoute($this->getPath(), $path)){
+                        return [Frame::path([$controller]), $this->getParameters()];
+                    }
+                }
             }
         }
-        return ["404", []];
+    }
+
+    public function matchHost($host)
+    {
+        if ($host == $this->getHost()) {
+            return true;
+        }
     }
 
     public function matchRoute($source, $target)

@@ -8,23 +8,33 @@ class BuildController extends \Hub\Base\Controller
     public function model(string $name, int $usedb = 1)
     {
         $fp = $namespace =  ['App'];
-        $class = $name;
+        // $class = $name;
 
-        if(strpos($name, '\\') > -1){ // includes a path
-            $path = explode('\\', $name);
-            $class = array_pop($path);
-            $namespace[] = implode('\\', $path);
-            $fp[] = implode('\\', $path);
-            $fp[] = $class;
-        } else {
-            $fp[] = $class;
-        }
+        $parts = explode("/", $name);
+
+        $class = array_pop($parts);
+
+        $namespace = array_merge($namespace, $parts);
+        $fp = array_merge($fp, $parts);
+        $fp[] = $class;
+
+
+        // if(strpos($name, '\\') > -1){ // includes a path
+        //     $path = explode('\\', $name);
+        //     $class = array_pop($path);
+        //     $namespace[] = implode('\\', $path);
+        //     $fp[] = implode('\\', $path);
+        //     $fp[] = $class;
+        // } else {
+        //     $fp[] = $class;
+        // }
 
         $fp = Frame::path($fp);
         $namespace = Frame::ns($namespace);
 
         $loc = $usedb ? 'Hub\Cli\Templates\Build\DbModel.php' : 'Hub\Cli\Templates\Build\BaseModel.php';
         $template = file_get_contents($loc);
+        // var_dump($class, $namespace, $fp); die;
         $template = str_replace(['{namespace}', '{class}'], [$namespace, $class], $template);
 
         if(!is_dir(dirname($fp))){

@@ -3,9 +3,11 @@ namespace Hub\Base;
 
 use ReflectionMethod;
 
+use Frame;
+
 class Controller extends Base
 {
-    protected $layout = "main";
+    protected $layout = "default/layouts/main";
 
     public function error($message)
     {
@@ -46,6 +48,11 @@ class Controller extends Base
             }
         }
         return $params;
+    }
+
+    public function resolve($controller)
+    {
+        return Frame::ns([Frame::$app->request->getControllerPath(), $controller]);
     }
 
     public function redirect($url)

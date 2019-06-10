@@ -7,8 +7,10 @@ class Record extends Base
 {
     public $isNewRecord = true;
 
-    public $attributes = [];
-    public $old_attributes = [];
+    protected $attributes = [];
+    protected $old_attributes = [];
+
+    protected $events = [];
 
     public function __construct($options = [], $isNewRecord = true)
     {
@@ -23,15 +25,49 @@ class Record extends Base
             $this->attributes[$columnName] = $this->old_attributes[$columnName] = $this->$columnName;
             $this->$columnName = &$this->attributes[$columnName];
         }
+
+        $this->events = [
+            \Hub\Events\BeforeSave::class => [],
+            \Hub\Events\BeforeCreate::class => [],
+            \Hub\Events\AfterCreate::class => [],
+            \Hub\Events\AfterSave::class => [],
+        ];
+    }
+
+    public function validate()
+    {
+        return true;
+    }
+
+    public function dispatch($eventModel)
+    {
+        if (isset($this->events[$eventModel::getClassName()])) {
+            foreach ($this->events[$eventModel::getClassName()] as $method) {
+                call_user_func_array($method, [$eventModel]);
+            }
+        }
     }
 
     public function save()
     {
+        $this->dispatch(new \Hub\Events\BeforeSave($this));
         if($this->isNewRecord){
-            return $this->insert();
+            $this->dispatch(new \Hub\Events\BeforeCreate($this));
+            if ($this->insert()) {
+                $this->dispatch(new \Hub\Events\AfterCreate($this));
+                $this->dispatch(new \Hub\Events\AfterSave($this));
+
+                return true;
+            }
         } else {
-            return $this->update();
+            if ($this->update()) {
+                $this->dispatch(new \Hub\Events\AfterSave($this));
+
+                return true;
+            }
         }
+
+        return false;
     }
 
     public static function getClass()
