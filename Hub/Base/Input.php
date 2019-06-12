@@ -25,7 +25,7 @@ class Input extends \Hub\Base\Base
                 switch (Frame::$app->request->getContentType()) {
                     case "application/x-www-form-urlencoded":
                         parse_str(file_get_contents('php://input'), $input);
-                        $this->input = $input;
+                        $this->input = $input;                        
                     break;
 
                     case "application/json":
@@ -35,7 +35,6 @@ class Input extends \Hub\Base\Base
 
             break;
         }
-        // $this->input = $input;
     }
 
     public function get($field)

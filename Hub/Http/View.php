@@ -7,9 +7,6 @@ use Hub\Base\Base;
 
 class View extends Base
 {
-
-    // public static $extensions = ["php", "html", "php.blade", "blade", "twig"];
-
     public static $engines = [];
 
     public static function registerEngine($engine, $method)

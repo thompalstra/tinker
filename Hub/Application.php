@@ -30,22 +30,21 @@ class Application extends Base
 
         $this->root = dirname(__DIR__);
 
-        $ini = Frame::path([$this->root, 'app.ini']);
-        if(file_exists($ini)){
-            $this->ini = (object) parse_ini_file($ini, true);
+        $config = Frame::path([$this->root, 'config.php']);
+        if(file_exists($config)){
+            $this->config = require($config);
         }
 
-        $host = $this->ini->mysql['host'];
-        $dbname = $this->ini->mysql['dbname'];
-        $user = $this->ini->mysql['user'];
-        $password = $this->ini->mysql['password'];
+        $host = $this->config['mysql']['host'];
+        $dbname = $this->config['mysql']['dbname'];
+        $user = $this->config['mysql']['user'];
+        $password = $this->config['mysql']['password'];
 
         $this->db = new PDO("mysql:host={$host};dbname={$dbname}", "{$user}", "{$password}");
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->controller = new Controller();
 
         View::registerEngine("Hub\Blade\Renderer@output", ["blade", "blade.php"]);
-        View::registerEngine("Hub\Twig\Renderer@output", ["twig", "twig.php"]);
         View::registerEngine("Hub\Http\Renderer@output", ["html", "php"]);
     }
 
@@ -70,7 +69,6 @@ class Application extends Base
         $this->input = new \Hub\Base\Input();
 
         $config = $this->request->getRoutes();
-
         if(file_exists($config)){
             require("$config");
         } else {
@@ -85,7 +83,6 @@ class Application extends Base
             $controller = $matches[1];
             $method = $matches[2];
 
-            // $ns = Frame::ns([$this->request->getControllerPath(), $controller]);
             $controller = Frame::$app->controller->resolve($controller);
 
             if(class_exists($controller)){

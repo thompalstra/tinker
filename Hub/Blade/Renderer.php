@@ -1,16 +1,15 @@
 <?php
 namespace Hub\Blade;
 
+use Hub\Blade\BladeOne;
+
 class Renderer extends \Hub\Base\Base
 {
     public static function output($fp, $data)
     {
-        echo "Not implemented!"; exit;
-        // extract($data);
-        // ob_start();
-        // include($fp);
-        // $content = ob_get_contents();
-        // ob_end_clean();
-        // return $content;
+        $views = dirname(dirname(__DIR__));
+        $cache = dirname(dirname(__DIR__)) . '/cache';
+        $blade = new BladeOne($views,$cache,BladeOne::MODE_AUTO);
+        return $blade->run($fp,$data);
     }
 }

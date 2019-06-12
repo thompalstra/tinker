@@ -9,29 +9,38 @@ class UsersController extends \Hub\Base\Controller
 {
     public function view($id)
     {
-        $user = User::findOne([["id", "=", $id]]);
-        echo json_encode($user); exit;
+        if ($user = User::findOne([["id", "=", $id]])) {
+            echo json_encode($user); exit;
+        }
+        echo json_encode(0); exit;
     }
 
     public function create()
     {
-        $user = new User();
-        if ($user->load(Request::all()) && $user->validate() && $user->save()) {
-            echo json_encode($user->refresh()); exit;
+        if ($user = new User()) {
+            if ($user->load(Request::all()) && $user->validate() && $user->save()) {
+                echo json_encode($user->refresh()); exit;
+            }
         }
+
+        echo json_encode(0); exit;
     }
 
     public function update($id)
     {
-        $user = User::findOne([["id", "=", $id]]);
-        if (!$user->isNewRecord && $user->load(Request::all()) && $user->validate() && $user->save()) {
-            echo json_encode(1); exit;
+        if ($user = User::findOne([["id", "=", $id]])) {
+            if ($user->load(Request::all()) && $user->validate() && $user->save()) {
+                echo json_encode(1); exit;
+            }
         }
+        echo json_encode(0); exit;
     }
 
     public function delete($id)
     {
-        $user = User::findOne([["id", "=", $id]]);
-        echo json_encode($user->delete()); exit;
+        if ($user = User::findOne([["id", "=", $id]])) {
+            echo json_encode($user->delete()); exit;
+        }
+        echo json_encode(0); exit;
     }
 }

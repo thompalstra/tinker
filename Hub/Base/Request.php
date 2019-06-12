@@ -64,6 +64,9 @@ class Request extends Base implements RequestInterface
 
     public function matchHost($host)
     {
+        if ($host == "*") {
+            return true;
+        }
         if ($host == $this->getHost()) {
             return true;
         }
